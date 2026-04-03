@@ -3,12 +3,12 @@ const AppError = require("../utils/AppError");
 const asyncHandler = require("../utils/asyncHandler");
 
 const getAllUsers = asyncHandler(async (req, res) => {
-    const users = await User.find();
+    const users = await User.find().select("-password");
     res.status(200).json(users);
 });
 
 const getUserById = asyncHandler(async (req,res) =>{
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).select("-password");
     if (!user) throw new AppError("user not found",404);
     res.status(200).json(user);
 })
