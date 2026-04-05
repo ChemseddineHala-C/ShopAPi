@@ -4,25 +4,16 @@ const AppError = require("../utils/AppError");
 const asyncHandler = require("../utils/asyncHandler");
 
 const createOrder = asyncHandler( async (req,res) => {
-    const items = req.body;
-    const totalPrice = items.reduce((item) => {
-        const product = await Product.findBYId(item.productId);
+    let totalPrice = 0;
+    let items = [];
+    for (const item of req.body.items){
+        const product = await Product.findById(item.productId);
         if (!product) throw new AppError("Product not found",404);
 
-        if (product.stock < item.quantity) throw new AppError("Not enough stock",400);
-        const totalPrice = item.quantity * product.price;
+        if (item.quantity > product.stock) throw new AppError("Not enough stock",400);
+
+        totalPrice += item.quantity * product.price;
 
 
-        const updateProduct = await Product.findByIdAndUpdate(
-            item.id,
-            {stock:{$inc: -item.quantity}},
-            {new:true},
-        );
-
-        const newOrder = await Order.create({
-            
-        })
-
-
-    },0);
+    }
 })
