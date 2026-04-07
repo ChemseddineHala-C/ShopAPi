@@ -5,7 +5,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const hpp = require("hpp");
 
 const connectDB = require("./src/db/database");
-const errorMiddleware = require("./src/middleware/errorMiddleware");
+const errorMiddleware = require("./src/middleWare/errorMiddleware");
 const corsOptions = require("./src/config/crosOptions");
 const { globalLimiter, authLimiter } = require("./src/config/rateLimiter");
 
@@ -31,8 +31,8 @@ connectDB();
 // Route
 const authRoute = require("./src/routes/authRoutes");
 const userRoute = require("./src/routes/userRoutes");
-const productRoute = require("./src/routes/productRoutesRoutes");
-const reviewRoute = require("./src/routes/reviewRoutesRoutes");
+const productRoute = require("./src/routes/productRoutes");
+const reviewRoute = require("./src/routes/reviewRoutes");
 const orderRoute = require("./src/routes/orderRoutes");
 
 app.use("/auth", authLimiter, authRoute);

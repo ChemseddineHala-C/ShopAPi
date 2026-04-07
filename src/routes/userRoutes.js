@@ -9,7 +9,7 @@ const {
   updateUserById,
   deleteUserById,
   uploadProfilePic,
-} = require("../controllers/userController");
+} = require("../controllers/userControllers");
 
 router.get("/", protect, allowOnly("admin"), getAllUsers);
 router.get("/:id", protect, getUserById);

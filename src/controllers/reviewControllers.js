@@ -63,4 +63,4 @@ const deleteReview = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Review deleted successfully" });
 });
 
-module.exports = { createReview, getReviewByProduct, deleteReview };
+module.exports = { createReview, getReviewsByProduct, deleteReview };
