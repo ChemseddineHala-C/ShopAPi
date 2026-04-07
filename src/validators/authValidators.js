@@ -21,7 +21,7 @@ const registerValidator = [
 
     body("role")
         .isIn(["admin","customer"])
-        .withMessage("Role can be just admin or customer"),
+        .withMessage("Role can be just an admin or a customer"),
 
 
     body("phone")

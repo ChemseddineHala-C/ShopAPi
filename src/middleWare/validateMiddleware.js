@@ -12,6 +12,7 @@ const validateMiddleware = (req, res, next) => {
       })),
     });
   }
+
   next();
 };
 
