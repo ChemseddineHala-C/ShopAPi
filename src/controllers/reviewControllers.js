@@ -4,7 +4,7 @@ const Review = require("../models/reviewModel");
 const Order = require("../models/orderModel");
 const Product = require("../models/productModel");
 
-const createReview = asyncHanler(async (req, res) => {
+const createReview = asyncHandler(async (req, res) => {
   const order = await Order.findOne({
     user: req.user.id,
     status: "delivered",
@@ -26,9 +26,41 @@ const createReview = asyncHanler(async (req, res) => {
     comment: req.body.comment,
   });
 
-  const reviews = await Review.find({ product: productId });
+  const reviews = await Review.find({ product: req.params.productId });
   const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
-  await Product.findByIdAndUpdate(productId, { avgRating: avg || 0 });
+  await Product.findByIdAndUpdate(req.params.productId, {
+    avgRating: avg || 0,
+  });
 
   res.status(201).json(newReview);
 });
+
+const getReviewsByProduct = asyncHandler(async (req, res) => {
+  const reviews = await Review.find({ product: req.params.productId }).populate(
+    "user",
+    "name",
+  );
+  res.status(200).json(reviews);
+});
+
+const deleteReview = asyncHandler(async (req, res) => {
+  const review = await Review.findById(req.params.id);
+  if (!review) throw new AppError("Review not found", 404);
+
+  if (review.user.toString() !== req.user.id && req.user.role !== "admin")
+    throw new AppError("Not authorized", 403);
+
+  await Review.findByIdAndDelete(req.params.id);
+
+  // Recalculate avgRating
+  const reviews = await Review.find({ product: review.product });
+  const avg =
+    reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : 0;
+  await Product.findByIdAndUpdate(review.product, { avgRating: avg });
+
+  res.status(200).json({ message: "Review deleted successfully" });
+});
+
+module.exports = { createReview, getReviewByProduct, deleteReview };

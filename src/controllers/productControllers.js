@@ -8,9 +8,8 @@ const getAllProducts = asyncHandler(async (req, res) => {
   const filter = {};
   if (category) filter.category = category;
 
-  if (minPrice && maxPrice) filter.price = { $gte: mixPrice, $lte: maxPrice };
-  else if (minPrice) filter.price = { $gte: minPrice };
-  else filter.price = { $lte: maxPrice };
+  if (minPrice) filter.price = { ...filter.price, $gte: Number(minPrice) };
+  if (maxPrice) filter.price = { ...filter.price, $lte: Number(maxPrice) };
 
   const sortBy = req.query.sortBy || "createdAt";
   const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
@@ -53,10 +52,10 @@ const deleteProductById = asyncHandler(async (req, res) => {
 const uploadProductimg = asyncHandler(async (req, res) => {
   if (!req.file) throw new AppError("Please Upload a file");
 
-  const fileUrl = `${req.prtocol}://${req.get("host")}/uploads/${req.file.filename}`;
+  const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
 
   const product = await Product.findByIdAndUpdate(
-    req.user.id,
+    req.params.id,
     { image: fileUrl },
     { new: true },
   );

@@ -18,13 +18,13 @@ const createOrder = asyncHandler(async (req, res) => {
 
     const updateProduct = await Product.findByIdAndUpdate(
       item.productId,
-      { stock: { $inc: -item.quantity } },
+      { $inc: { stock: -item.quantity } },
       { new: true },
     );
     if (!updateProduct) throw new AppError("Product not found", 404);
 
     temp.push({
-      product: item.producId,
+      product: item.productId,
       quantity: item.quantity,
       price: product.price,
     });
@@ -79,21 +79,21 @@ const cancelOrder = asyncHandler(async (req, res) => {
   for (const item of order.items) {
     const product = await Product.findByIdAndUpdate(
       item.product,
-      { stock: { $inc: +item.quantity } },
+      { $inc: { stock: item.quantity } },
       { new: true },
     );
 
     if (!product) throw new AppError("prouct not found", 404);
   }
 
-  const updateOrder = await findByIdAndUpdate(
+  const updateOrder = await Order.findByIdAndUpdate(
     order._id,
-    { satuts: "cancelled" },
+    { status: "cancelled" },
     { new: true },
   );
 
   if (!updateOrder) throw new AppError("order not found", 404);
-  res.status(200).res(updateOrder);
+  res.status(200).json(updateOrder);
 });
 
 module.exports = {

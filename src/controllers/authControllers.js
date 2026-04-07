@@ -15,15 +15,15 @@ const createToken = (user) => {
 const register = asyncHandler(async (req, res) => {
   const { name, email, password, role, address, phone } = req.body;
 
-  const existingEmail = await findOne({ email: email });
-  if (existingEmail) throw new AppError("Email already registred", 500);
+  const existingEmail = await User.findOne({ email: email });
+  if (existingEmail) throw new AppError("Email already registred", 400);
 
-  const hashPassowrd = await bcrypt.hash(password, 10);
+  const hashedPassowrd = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({
     name: name,
     email: email,
-    passowrd: hashpassword,
+    passowrd: hashedpassword,
     role: role,
     phone: phone,
     address: address,
@@ -47,10 +47,10 @@ const register = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await findOne({ email: email });
+  const user = await User.findOne({ email: email });
   if (!user) throw new AppError("Invalid email or password", 401);
 
-  const isMatch = bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) throw new AppError("Invalid email or password", 401);
 
   const token = createToken(user);
