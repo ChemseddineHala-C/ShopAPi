@@ -1,4 +1,4 @@
-const crosOptions = {
+const corsOptions = {
   origin: (origin, callback) => {
     const allowedOrigins = [
       "http://localhost:3000",
@@ -21,4 +21,4 @@ const crosOptions = {
   credentials: true,
 };
 
-module.exports = crosOptions;
+module.exports = corsOptions;

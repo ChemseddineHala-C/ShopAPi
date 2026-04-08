@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const protect = require("../middleWare/authMiddleware");
+const { protect } = require("../middleWare/authMiddleware");
 const allowOnly = require("../middleWare/roleMiddleware");
 const reviewValidator = require("../validators/reviewValidators");
 const validateMiddleware = require("../middleWare/validateMiddleware");

@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
@@ -6,11 +7,10 @@ const hpp = require("hpp");
 
 const connectDB = require("./src/db/database");
 const errorMiddleware = require("./src/middleWare/errorMiddleware");
-const corsOptions = require("./src/config/crosOptions");
+const corsOptions = require("./src/config/corsOptions");
 const { globalLimiter, authLimiter } = require("./src/config/rateLimiter");
 
 const app = express();
-const path = require("path");
 
 // Security MiddleWare - ORDER MATTERS
 app.use(helmet());
@@ -35,12 +35,13 @@ const productRoute = require("./src/routes/productRoutes");
 const reviewRoute = require("./src/routes/reviewRoutes");
 const orderRoute = require("./src/routes/orderRoutes");
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/auth", authLimiter, authRoute);
 app.use("/users", userRoute);
 app.use("/products", productRoute);
 app.use("/reviews", reviewRoute);
 app.use("/orders", orderRoute);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // ERROR HANDLER
 app.use(errorMiddleware);
 

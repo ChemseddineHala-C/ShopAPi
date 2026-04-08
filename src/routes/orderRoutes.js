@@ -8,7 +8,7 @@ const {
   updateOrderStatus,
   cancelOrder,
 } = require("../controllers/orderControllers");
-const protect = require("../middleWare/authMiddleware");
+const { protect } = require("../middleWare/authMiddleware");
 const allowOnly = require("../middleWare/roleMiddleware");
 const orderValidator = require("../validators/orderValidators");
 const validateMiddleware = require("../middleWare/validateMiddleware");
