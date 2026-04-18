@@ -4,12 +4,18 @@ const asyncHandler = require("../utils/asyncHandler");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-const createToken = (user) => {
+const createAccessToken = (user) => {
   return jwt.sign(
     { id: user._id, email: user.email, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" },
+    process.env.JWT_ACCESS_SECRET,
+    { expiresIn: process.env.JWT_ACCESS_EXPIRES },
   );
+};
+
+const createRefreshToken = (user) => {
+  return jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: process.env.JWT_REFRESH_EXPIRES,
+  });
 };
 
 const register = asyncHandler(async (req, res) => {
@@ -29,11 +35,11 @@ const register = asyncHandler(async (req, res) => {
     address: address,
   });
 
-  const token = createToken(newUser);
+  const accessToken = createAccessToken(newUser);
 
   res.status(201).json({
     message: "User registred successfully",
-    token: token,
+    accessToken: accessToken,
     user: {
       name: newUser.name,
       email: newUser.email,
@@ -53,11 +59,15 @@ const login = asyncHandler(async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) throw new AppError("Invalid email or password", 401);
 
-  const token = createToken(user);
+  const accesstoken = createAccessToken(user);
+  const refreshToken = createRefreshToken(user);
+
+  await User.findByIdAndUpdate(user._id, { refreshToken: refreshToken });
 
   res.status(200).json({
     message: "Login successful",
-    token: token,
+    accessToken: accesstoken,
+    refreshToken: refreshToken,
     user: {
       id: user._id,
       name: user.name,
@@ -69,4 +79,40 @@ const login = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { register, login };
+const refresh = asyncHandler(async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) throw new AppError("Refresh token is required", 401);
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  } catch (err) {
+    throw new AppError("Invalid or expired refresh token", 401);
+  }
+
+  const user = await User.findById(decoded.id);
+  if (!user || user.refreshToken !== refreshToken)
+    throw new AppError("Invalid refresh token", 401);
+
+  const newaccessToken = createAccessToken(user);
+
+  res.status(200).json({
+    newaccessToken: newaccessToken,
+  });
+});
+
+const logout = asyncHandler(async (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) throw new AppError("Refresh token is required", 400);
+
+  const user = await User.findOne({ refreshToken: refreshToken });
+  if (!user) throw new AppError("Invalid refresh token", 401);
+
+  await User.findByIdAndUpdate(user._id, { refreshToken: null });
+
+  res.status(200).json({
+    message: "Logout successful",
+  });
+});
+
+module.exports = { register, login, refresh, logout };

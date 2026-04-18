@@ -39,6 +39,10 @@ const userShema = new mongoose.Schema(
     phone: {
       type: String,
     },
+    refreshToken: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true, versionKey: false },
 );

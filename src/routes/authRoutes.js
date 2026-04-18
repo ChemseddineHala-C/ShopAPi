@@ -5,9 +5,11 @@ const {
   loginValidator,
 } = require("../validators/authValidators");
 const validateMiddleware = require("../middleWare/validateMiddleware");
-const { register, login } = require("../controllers/authControllers");
+const { register, login, refresh, logout } = require("../controllers/authControllers");
 
 router.post("/register", registerValidator, validateMiddleware, register);
 router.post("/login", loginValidator, validateMiddleware, login);
+router.post("/refresh", refresh);
+router.post("/logout", logout);
 
 module.exports = router;
