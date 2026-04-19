@@ -19,7 +19,7 @@ const createRefreshToken = (user) => {
 };
 
 const register = asyncHandler(async (req, res) => {
-  const { name, email, password, role, address, phone } = req.body;
+  const { name, email, password, role } = req.body;
 
   const existingEmail = await User.findOne({ email: email });
   if (existingEmail) throw new AppError("Email already registred", 400);
