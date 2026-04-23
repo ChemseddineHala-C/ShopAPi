@@ -83,7 +83,7 @@ const cancelOrder = asyncHandler(async (req, res) => {
       { new: true },
     );
 
-    if (!product) throw new AppError("prouct not found", 404);
+    if (!product) throw new AppError("product not found", 404);
   }
 
   const updateOrder = await Order.findByIdAndUpdate(

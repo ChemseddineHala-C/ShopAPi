@@ -22,17 +22,15 @@ const register = asyncHandler(async (req, res) => {
   const { name, email, password, role } = req.body;
 
   const existingEmail = await User.findOne({ email: email });
-  if (existingEmail) throw new AppError("Email already registred", 400);
+  if (existingEmail) throw new AppError("Email already registered", 400);
 
-  const hashedPassowrd = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({
     name: name,
     email: email,
-    passowrd: hashedpassword,
+    password: hashedPassword,
     role: role,
-    phone: phone,
-    address: address,
   });
 
   const accessToken = createAccessToken(newUser);
@@ -84,6 +82,7 @@ const refresh = asyncHandler(async (req, res) => {
 
   if (!refreshToken) throw new AppError("Refresh token is required", 401);
 
+  let decoded;
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
   } catch (err) {
