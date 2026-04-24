@@ -46,7 +46,7 @@ const updateProductById = asyncHandler(async (req, res) => {
 const deleteProductById = asyncHandler(async (req, res) => {
   const product = await Product.findByIdAndDelete(req.params.id);
   if (!product) throw new AppError("user not found", 404);
-  res.status(204).json({ message: "User deleted successfully" });
+  res.status(204).json({ message: "Product deleted successfully" });
 });
 
 const uploadProductimg = asyncHandler(async (req, res) => {

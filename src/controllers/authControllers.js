@@ -33,11 +33,15 @@ const register = asyncHandler(async (req, res) => {
     role: role,
   });
 
+  const refreshToken = createRefreshToken(newUser);
   const accessToken = createAccessToken(newUser);
+
+  await User.findByIdAndUpdate(newUser._id, { refreshToken: refreshToken });
 
   res.status(201).json({
     message: "User registred successfully",
     accessToken: accessToken,
+    refreshToken: refreshToken,
     user: {
       name: newUser.name,
       email: newUser.email,
